@@ -43,5 +43,17 @@ namespace Catalog.Application.Mappers
 
         public static Product ToEntity(this CreateProductCommand command, ProductBrand brand, ProductType type)
             => Product.Create(command.Name, command.Summary, command.Description, command.Price, command.ImageFile, brand, type);
+
+        public static Product toUpdateEntity(this UpdateProductCommand command, Product existingProduct, ProductBrand brand, ProductType type)
+        {
+            existingProduct.UpdateName(command.Name);
+            existingProduct.UpdateSummary(command.Summary);
+            existingProduct.UpdateImageFile(command.ImageFile);
+            existingProduct.UpdateDescription(command.Description);
+            existingProduct.UpdatePrice(command.Price);
+            existingProduct.UpdateProductBrand(brand);
+            existingProduct.UpdateProductType(type);
+            return existingProduct;
+        }
     }
 }
