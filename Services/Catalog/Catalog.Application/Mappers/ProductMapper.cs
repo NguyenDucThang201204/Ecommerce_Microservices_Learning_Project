@@ -1,7 +1,9 @@
 ﻿using Catalog.Application.Commands;
+using Catalog.Application.DTOs;
 using Catalog.Application.Responses;
 using Catalog.Core.Entities;
 using Catalog.Core.Specifications;
+using MongoDB.Driver;
 
 namespace Catalog.Application.Mappers
 {
@@ -54,6 +56,26 @@ namespace Catalog.Application.Mappers
             existingProduct.UpdateProductBrand(brand);
             existingProduct.UpdateProductType(type);
             return existingProduct;
+        }
+
+        public static ProductDTO ToDto(this ProductResponse product)
+        {
+            if (product == null)
+            {
+                return null;
+            }
+            return new ProductDTO
+            (
+                product.Id,
+                product.Name,
+                product.Summary,
+                product.Description,
+                product.ImageFile,
+                new BrandDTO(product.ProductBrand.Id, product.ProductBrand.Name),
+                new TypeDTO(product.ProductType.Id, product.ProductType.Name),
+                product.Price,
+                DateTimeOffset.UtcNow
+            );
         }
     }
 }
