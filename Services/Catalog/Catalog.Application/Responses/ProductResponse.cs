@@ -6,8 +6,6 @@ namespace Catalog.Application.Responses
 {
     public record ProductResponse
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; init; }
         public string Name { get; init; }
         public string Summary { get; init; }
