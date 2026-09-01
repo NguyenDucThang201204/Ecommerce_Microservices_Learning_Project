@@ -1,4 +1,5 @@
-﻿using Catalog.Application.DTOs;
+﻿using Catalog.Application.Commands;
+using Catalog.Application.DTOs;
 using Catalog.Application.Mappers;
 using Catalog.Application.Queries;
 using Catalog.Core.Specifications;
@@ -49,5 +50,38 @@ namespace Catalog.API.Controllers
             return Ok(dtoList);
         }
 
+        [HttpPost("CreateProduct")]
+        public async Task<ActionResult<ProductDTO>> CreateProduct([FromBody] CreateProductDTO createProductDTO)
+        {
+            var command = createProductDTO.ToCommand();
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(string id)
+        {
+            var command = new DeleteProductByIdCommand(id);
+            var result = await _mediator.Send(command);
+            if (!result)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
+        [HttpPut("UpdateProduct")]
+        public async Task<IActionResult> UpdateProduct(string id, UpdateProductDTO updateProductDTO)
+        {
+            var command = updateProductDTO.ToCommand(id);
+            var result = await _mediator.Send(command);
+            if (!result)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
     }
 }
