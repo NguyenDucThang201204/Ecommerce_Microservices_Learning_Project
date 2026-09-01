@@ -77,5 +77,36 @@ namespace Catalog.Application.Mappers
                 DateTimeOffset.UtcNow
             );
         }
+
+        // Hỗ trợ gộp ID ở URL và DTO lại thành class Command
+        public static UpdateProductCommand ToCommand(this UpdateProductDTO dto, string id)
+        {
+            return new UpdateProductCommand
+            {
+                Id = id,
+                Name = dto.Name,
+                Summary = dto.Summary,
+                Description = dto.Description,
+                ImageFile = dto.ImageFile,
+                Price = dto.Price,
+                BrandId = dto.BrandId,
+                TypeId = dto.TypeId
+            };
+        }
+
+        // Hỗ trợ gộp ID ở URL và DTO lại thành class Command
+        public static CreateProductCommand ToCommand(this CreateProductDTO dto)
+        {
+            return new CreateProductCommand
+            {
+                Name = dto.Name,
+                Summary = dto.Summary,
+                Description = dto.Description,
+                ImageFile = dto.ImageFile,
+                Price = dto.Price,
+                BrandId = dto.BrandId,
+                TypeId = dto.TypeId
+            };
+        }
     }
 }
