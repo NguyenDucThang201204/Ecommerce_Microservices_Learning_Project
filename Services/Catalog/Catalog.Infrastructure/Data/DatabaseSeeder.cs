@@ -17,10 +17,13 @@ namespace Catalog.Infrastructure.Data
             var brands = mongoDatabase.GetCollection<ProductBrand>(settings.BrandCollectionName);
             var types = mongoDatabase.GetCollection<ProductType>(settings.TypeCollectionName);
 
-            var SeedBasePath = Path.Combine("Data", "SeedData");
+            var infraDir = Path.GetDirectoryName(typeof(DatabaseSeeder).Assembly.Location)!;
+            var SeedBasePath = Path.Combine(infraDir, "Data", "SeedData");
 
             //Seed Brands
             List<ProductBrand> brandlist = new();
+            // ưu tiên dùng lệnh terminal drop container rồi build lại image rồi up lại container
+            //await mongoDatabase.DropCollectionAsync(settings.BrandCollectionName);
             if (await brands.CountDocumentsAsync(_ => true) == 0)
             {
                 var brandData = await File.ReadAllTextAsync(Path.Combine(SeedBasePath, "brands.json"));
@@ -34,6 +37,7 @@ namespace Catalog.Infrastructure.Data
 
             //Seed Types
             List<ProductType> typelist = new();
+            //await mongoDatabase.DropCollectionAsync(settings.TypeCollectionName);
             if (await types.CountDocumentsAsync(_ => true) == 0)
             {
                 var typeData = await File.ReadAllTextAsync(Path.Combine(SeedBasePath, "types.json"));
@@ -47,10 +51,16 @@ namespace Catalog.Infrastructure.Data
 
             //Seed Products
             List<Product> productlist = new();
+            //await mongoDatabase.DropCollectionAsync(settings.ProductCollectionName);
             if (await products.CountDocumentsAsync(_ => true) == 0)
             {
                 var productData = await File.ReadAllTextAsync(Path.Combine(SeedBasePath, "products.json"));
-                productlist = JsonSerializer.Deserialize<List<Product>>(productData);
+                var dtos = JsonSerializer.Deserialize<List<ProductSeedDto>>(productData)!;
+
+                productlist = dtos.Select(d => Product.Create(
+                   d.Name, d.Summary, d.Description, d.Price, d.ImageFile,
+                   d.Brand, d.Type)).ToList();
+
                 foreach (var product in productlist)
                 {
                     // Reset ID to let MongoDB generate a new one
